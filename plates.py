@@ -15,7 +15,7 @@ def main():
     
 
 def is_valid(s):
-    if start_with_letters(s) and min_max_characters(s): 
+    if start_with_letters(s) and min_max_characters(s) and ends_with_numbers(s) and starting_number(s) and check_punctuation(s): 
        return True
     else:
        return False
@@ -29,16 +29,28 @@ def min_max_characters(n):
         return False
         
 def start_with_letters(s):
-    characters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
-    s = s[0:2]
-    s = s.split(" ,")
-    while True:
-        if s in characters:
-            print(s)
-            return True
-        else:
-            print(s)
-            return False
+    sn = s[0:2]
+    if sn.isalpha():
+        return True
+    else:
+        return False
+            
+def ends_with_numbers(j):
+    numbers = ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
+    if j.endswith(numbers):
+        return True
+    else:
+        return False
         
+def starting_number(n):
+    s = n.lstrip("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    if s.startswith("0"):
+        return False
+    else:
+        return True
+
+import re    
+def check_punctuation(s):
+    return not bool(re.search(r"[!\"#$%&'()*+,-./:;<=>?@[\]^_` {|}~]", s))
     
 main()
