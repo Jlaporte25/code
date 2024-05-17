@@ -17,7 +17,7 @@ while True:
         item = input("Item: ").title()
         if item in menu:
             total = total + menu[item]
-            print("Total: ${:0.2f}".format(total))
+            print(f"Total: ${total:0.2f}")
     
     except KeyError:
         pass
