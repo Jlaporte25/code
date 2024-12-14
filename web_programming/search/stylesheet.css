@@ -1,16 +1,41 @@
+.button_container {
+    display: flex;
+    justify-content: right;
+    background-color: rgb(67, 67, 67);
+}
+
 h1 {
-    color: blue;
-    text-align: center;
+    color: rgb(154, 22, 22);
     font-size: 100pt;
-    margin: 40px;
+    text-align: center;
+}
+
+.submitbutton, .button {
+    width: 130px;
+    height: 40px;
+    border-radius: 10px;
+    margin: auto;
+    margin: 10px;
 }
 
 form {
-    text-align: center;
+    height: 440px;
+    background-color: rgb(67, 67, 67);
 }
 
-button {
-    background-color: aquamarine;
+.textarea {
+    width: 500px;
+    height: 35px;
+    border-radius: 15px;
+    margin: 20px;    
+}
+
+div > button {
     padding: 5px;
     margin: 5px;
+}
+
+.container {
+    background-color: rgb(67, 67, 67);
+    height: 100%;
 }

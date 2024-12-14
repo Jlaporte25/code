@@ -1,13 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Advanced Search</title>
+        <title>Search</title>
         <link rel="stylesheet" href="stylesheet.css">
     </head>
     <body>
-        <form action="https://www.google.com/advanced_search">
-            <input type="text" name="q">
-            <input type="submit" value="Google Search">
-        </form>
+        <div class="container">
+            <div class="button_container">
+                <button><a href="index.html">Google Search</a></button>
+                <button><a href="image_search.html">Image Search</a></button>
+            </div>
+            <h3>
+                Advanced Search
+            </h3>
+            <p>
+                Find pages with...
+            </p>
+            <form action="https://www.images.google.com/search">
+                <label for="atw">all these words</label>
+                <div>
+                    <input type="text" id="atw" name="all_these_words">
+                </div>
+                <label for="exact">this exact word or phrase</label>
+                <div>
+                    <input type="text" id="exact" name="exact_words">
+                </div>
+                <label for="ntw">none of these words</label>
+                <div>
+                    <input type="text" id="ntw" name="none_these_words">
+                </div>
+            </form>
+            <div>
+                
+                
+            </div>
+        </div>
     </body>
 </html>
