@@ -1,39 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <title>Search</title>
-        <link rel="stylesheet" href="stylesheet.css">
-    </head>
-    <body>
-        <div class="container">
-            <div class="button_container">
-                <button><a href="index.html">Google Search</a></button>
-                <button><a href="image_search.html">Image Search</a></button>
-            </div>
-            <h3>
-                Advanced Search
-            </h3>
-            <p>
-                Find pages with...
-            </p>
-            <form action="https://www.images.google.com/search">
-                <label for="atw">all these words</label>
-                <div>
-                    <input type="text" id="atw" name="all_these_words">
-                </div>
-                <label for="exact">this exact word or phrase</label>
-                <div>
-                    <input type="text" id="exact" name="exact_words">
-                </div>
-                <label for="ntw">none of these words</label>
-                <div>
-                    <input type="text" id="ntw" name="none_these_words">
-                </div>
-            </form>
-            <div>
-                
-                
-            </div>
-        </div>
-    </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Advanced Search</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="links">
+        <a href="index.html">Google Search</a>
+        <a href="image_search.html">Google Image Search</a>
+    </div>
+    <div class="search-container">
+        <h1>Google Advanced Search</h1>
+        <form action="https://www.google.com/search" method="get">
+            <label for="all-words">All these words:</label>
+            <input type="text" name="all" id="all-words" class="input-field">
+            <label for="exact-words">This exact word or phrase:</label>
+            <input type="text" name="exact" id="exact-words" class="input-field">
+            <label for="any-words">Any of these words:</label>
+            <input type="text" name="any" id="any-words" class="input-field">
+            <label for="none-words">None of these words:</label>
+            <input type="text" name="none" id="none-words" class="input-field">
+            <input type="submit" value="Advanced Search" class="search-button">
+        </form>
+    </div>
+</body>
 </html>

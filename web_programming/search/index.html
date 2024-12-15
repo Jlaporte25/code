@@ -1,31 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Search</title>
-        <link rel="stylesheet" href="stylesheet.css">
+        <link rel="stylesheet" href="styles.css">
     </head>
     <body>
-        <div class="container">
-            <div class="button_container">
-                <button><a href="image_search.html">Image Search</a></button>
-                <button><a href="advanced_search.html">Advanced Search</a></button>
-            </div>
-            <h1>
-                Google
-            </h1>
+        <div class="links">
+            <a href="image_search.html">Google Image Search</a> 
+            <a href="advanced_search.html">Google Advanced Search</a>
+        </div>
+        <div class="search-container">
+            <img src="holiday_google.gif" alt="google">
             <form action="https://www.google.com/search">
                 <center>
-                    <input class="textarea" type="text" name="q">
+                    <input type="text" name="q" class="input-field">
                     <br>
-                    <input class="submitbutton" type="submit" value="Google Search">
-                    <input type="submit" name="btnI" value="I'm Feeling Lucky" class="button">
+                    <input type="submit" value="Google Search" class="search-button">
+                    <input type="submit" name="btnI" value="I'm Feeling Lucky" class="search-button">
                 </center>
-                
             </form>
-            <div>
-                
-                
-            </div>
         </div>
     </body>
 </html>
