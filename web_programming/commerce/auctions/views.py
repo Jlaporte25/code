@@ -3,12 +3,20 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from .models import Listing
-from .models import User
+from .models import Listing, User, Bid, Comment, Watchlist, Category, ListingCategory, Winner
+from django import forms
 
+class NewAuctionForm(forms.Form):
+    title = forms.CharField(label="Title")
+    description = forms.CharField(label="Description")
+    starting_bid = forms.DecimalField(label="Starting Bid")
+    image = forms.URLField(label="Image URL")
+    category = forms.CharField(label="Category")
 
 def index(request):
-    return render(request, "auctions/index.html")
+    return render(request, "auctions/index.html", {
+        "listings": Listing.objects.all(),
+    })
 
 
 def login_view(request):
@@ -62,40 +70,65 @@ def register(request):
     else:
         return render(request, "auctions/register.html")
 
+
 def listing(request):
+    
     return render(request, "auctions/listing.html", {
-        "listing": Listing.objects.get(pk=id)
+        "listing": Listing.objects.get(pk=id),
+        
     })
 
+
 def create(request):
-    return render(request, "auctions/create.html", {
-        "title": Listing.title,
-        "description": Listing.description,
-        "starting_bid": Listing.starting_bid,
-        "image": Listing.objects.get(pk=id).image,
-        "category": Listing.objects.get(pk=id).category,
-    })
+    if request.method == "POST":
+        form = NewAuctionForm(request.POST)
+        if form.is_valid():
+            title = form.cleaned_data["title"]
+            description = form.cleaned_data["description"]
+            starting_bid = form.cleaned_data["starting_bid"]
+            image = form.cleaned_data["image"]
+            category = form.cleaned_data["category"]
+            created_by = User.objects.get(pk=request.user.id)
+            listing = Listing.objects.create(title=title, description=description, starting_bid=starting_bid, image=image, category=category, created_by=created_by)
+            listing.save()
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            return render(request, "auctions/create.html", {
+                "form": form
+            })
+    else:
+        return render(request, "auctions/create.html", {
+            "form": NewAuctionForm()
+        })
+
 
 def watchlist(request):
     return render(request, "auctions/watchlist.html")
 
+
 def categories(request):
     return render(request, "auctions/categories.html")
+
 
 def category(request):
     return render(request, "auctions/category.html")
 
+
 def close(request):
     return render(request, "auctions/close.html")
+
 
 def comment(request):
     return render(request, "auctions/comment.html")
 
+
 def bid(request):
     return render(request, "auctions/bid.html")
 
+
 def add_watchlist(request):
     return render(request, "auctions/add_watchlist.html")
+
 
 def remove_watchlist(request):
     return render(request, "auctions/remove_watchlist.html")

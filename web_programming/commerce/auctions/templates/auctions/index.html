@@ -6,8 +6,8 @@
         {% for listing in listings %}
             <li>
                 <a href="{% url 'auctions:listing' listing.id %}">{{ listing.title }}</a>
-                <span>by {{ listing.seller }}</span>
-                <span>for {{ listing.price }}</span>
-            </li>
+                {% if listing.winner %}
+                    (Winner: {{ listing.winner }})
+                {% endif %}
         {% endfor %}
 {% endblock %}
