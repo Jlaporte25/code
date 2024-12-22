@@ -3,7 +3,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-
+from .models import Listing
 from .models import User
 
 
@@ -61,3 +61,41 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/register.html")
+
+def listing(request):
+    return render(request, "auctions/listing.html", {
+        "listing": Listing.objects.get(pk=id)
+    })
+
+def create(request):
+    return render(request, "auctions/create.html", {
+        "title": Listing.title,
+        "description": Listing.description,
+        "starting_bid": Listing.starting_bid,
+        "image": Listing.objects.get(pk=id).image,
+        "category": Listing.objects.get(pk=id).category,
+    })
+
+def watchlist(request):
+    return render(request, "auctions/watchlist.html")
+
+def categories(request):
+    return render(request, "auctions/categories.html")
+
+def category(request):
+    return render(request, "auctions/category.html")
+
+def close(request):
+    return render(request, "auctions/close.html")
+
+def comment(request):
+    return render(request, "auctions/comment.html")
+
+def bid(request):
+    return render(request, "auctions/bid.html")
+
+def add_watchlist(request):
+    return render(request, "auctions/add_watchlist.html")
+
+def remove_watchlist(request):
+    return render(request, "auctions/remove_watchlist.html")
