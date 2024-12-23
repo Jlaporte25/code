@@ -2,7 +2,7 @@
 
 {% block body %}
     <h2>Create Listing</h2>
-    <form method="post" enctype="multipart/form-data"> <!-- enctype="multipart/form-data" is required for file uploads --> 
+    <form action="{% url 'auctions:create' %}" method="POST" enctype="multipart/form-data"> <!-- enctype="multipart/form-data" is required for file uploads --> 
         {% csrf_token %}
         <div class="form-group">
             {{ form }}

@@ -3,10 +3,10 @@ from django.db import models
 
 
 class User(AbstractUser):
-    username = models.CharField(max_length=64, unique=True)
-    email = models.EmailField(max_length=64)
+    # username = models.CharField(max_length=64, unique=True)
+    email = models.EmailField(max_length=254)
     password = models.CharField(max_length=64)
-    watchlist = models.ManyToManyField('Listing', blank=True, related_name='watchlist')
+    
     def __str__(self):
         return f"{self.username}"
 

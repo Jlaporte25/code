@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from .models import Listing, User, Bid, Comment, Watchlist, Category, ListingCategory, Winner
@@ -10,19 +10,15 @@ class NewAuctionForm(forms.Form):
     title = forms.CharField(label="Title")
     description = forms.CharField(label="Description")
     starting_bid = forms.DecimalField(label="Starting Bid")
-    image = forms.URLField(label="Image URL")
+    image = forms.URLField(label="Image URL", required=False)
     category = forms.CharField(label="Category")
 
 def index(request):
-    if request.user.is_authenticated:
-        return render(request, "auctions/index.html", {
-            "listings": Listing.objects.all(),
-            "watchlist": User.objects.get(pk=request.user.id).watchlist.all()
-        })
-    else:
-        return render(request, "auctions/index.html", {
-            "listings": Listing.objects.all()
-        })
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse("auctions:login"))
+    return render(request, "auctions/index.html", {
+        "listings": Listing.objects.all()
+    })
 
 
 def login_view(request):
@@ -39,8 +35,7 @@ def login_view(request):
             return render(request, "auctions/login.html", {
                 "message": "Invalid username and/or password."
             })
-    else:
-        return render(request, "auctions/login.html")
+    return render(request, "auctions/login.html")
 
 
 def logout_view(request):
@@ -75,11 +70,10 @@ def register(request):
         return render(request, "auctions/register.html")
 
 
-def listing(request):
-    
+def listing(request, listing_id):
+    listing = Listing.objects.get(pk=listing_id)
     return render(request, "auctions/listing.html", {
-        "listing": Listing.objects.get(pk=id),
-        
+        "listing": listing,
     })
 
 
@@ -95,7 +89,7 @@ def create(request):
             created_by = User.objects.get(pk=request.user.id)
             listing = Listing.objects.create(title=title, description=description, starting_bid=starting_bid, image=image, category=category, created_by=created_by)
             listing.save()
-            return HttpResponseRedirect(reverse("index"))
+            return HttpResponseRedirect(reverse("auctions:index"))
         else:
             return render(request, "auctions/create.html", {
                 "form": form

@@ -8,15 +8,15 @@
         <div>{{ message }}</div>
     {% endif %}
 
-    <form action="{% url 'auctions:login' %}" method="post">
+    <form action="{% url 'auctions:login' %}" method="POST">
         {% csrf_token %}
         <div class="form-group">
-            <input autofocus class="form-control" type="text" name="username" placeholder="Username">
+            <input autofocus class="form-control" type="text" name="username" placeholder="Username" value="{{ username }}" required>
         </div>
         <div class="form-group">
-            <input class="form-control" type="password" name="password" placeholder="Password">
+            <input class="form-control" type="password" name="password" placeholder="Password" value="{{ password }}" required>
         </div>
-        <input class="btn btn-primary" type="submit" value="Login">
+        <input class="btn btn-primary" type="submit" value="Login" />
     </form>
 
     Don't have an account? <a href="{% url 'auctions:register' %}">Register here.</a>
