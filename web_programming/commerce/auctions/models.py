@@ -9,7 +9,7 @@ class User(AbstractUser):
     watchlist = models.ManyToManyField('Listing', blank=True, related_name='watchlist')
     def __str__(self):
         return f"{self.username}"
-    
+
 class Listing(models.Model):
     title = models.CharField(max_length=64)
     description = models.TextField()
@@ -51,7 +51,7 @@ class ListingCategory(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='listing_category')
     def __str__(self):
         return f"{self.listing} {self.category}"
-    
+
 class Winner(models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='winner')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='winner')

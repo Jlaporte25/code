@@ -14,9 +14,15 @@ class NewAuctionForm(forms.Form):
     category = forms.CharField(label="Category")
 
 def index(request):
-    return render(request, "auctions/index.html", {
-        "listings": Listing.objects.all(),
-    })
+    if request.user.is_authenticated:
+        return render(request, "auctions/index.html", {
+            "listings": Listing.objects.all(),
+            "watchlist": User.objects.get(pk=request.user.id).watchlist.all()
+        })
+    else:
+        return render(request, "auctions/index.html", {
+            "listings": Listing.objects.all()
+        })
 
 
 def login_view(request):
