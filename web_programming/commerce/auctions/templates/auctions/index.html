@@ -5,10 +5,12 @@
     <ul>
         {% for listing in listings %}
             <li>
-                <img src="{{ listing.image_url }}" alt="Image of {{ listing.title }}">
+                <img src="{{ listing.image }}" alt="Image of {{ listing.title }}">
                 <a href="{% url 'auctions:listing' listing.id %}">{{ listing.title }}</a>
                 {% if listing.winner %}
-                    (Winner: {{ listing.winner }})
+                    Winner: {{ listing.winner.username }}
+                {% else %}
+                    No Winner
                 {% endif %}
             </li>
         {% endfor %}

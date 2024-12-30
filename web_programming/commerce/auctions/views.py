@@ -1,9 +1,10 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 from .models import Listing, User, Bid, Comment, Watchlist, Category, ListingCategory, Winner
+from django.db.models import Max, Count
 from django import forms
 
 class NewAuctionForm(forms.Form):
@@ -12,6 +13,12 @@ class NewAuctionForm(forms.Form):
     starting_bid = forms.DecimalField(label="Starting Bid")
     image = forms.URLField(label="Image URL", required=False)
     category = forms.CharField(label="Category")
+
+class NewCommentForm(forms.Form):
+    comment = forms.CharField(label="New Comment")
+
+class NewBidForm(forms.Form):
+    bid = forms.DecimalField(label="New Bid", max_digits=10, decimal_places=2)
 
 def index(request):
     if not request.user.is_authenticated:
@@ -72,8 +79,17 @@ def register(request):
 
 def listing(request, listing_id):
     listing = Listing.objects.get(pk=listing_id)
+    listing_comments = Comment.objects.filter(listing=listing)
+    listing_bids = Bid.objects.filter(listing=listing)
+    highest_bid = listing_bids.aggregate(Max('amount'))['amount__max']
+    bid_count = listing_bids.aggregate(Count('id'))['id__count']
     return render(request, "auctions/listing.html", {
         "listing": listing,
+        "listing_comments": listing_comments,
+        "highest_bid": highest_bid,
+        "bid_count": bid_count,
+        "comment_form": NewCommentForm(),
+        "bid_form": NewBidForm(),
     })
 
 
@@ -89,7 +105,7 @@ def create(request):
             created_by = User.objects.get(pk=request.user.id)
             listing = Listing.objects.create(title=title, description=description, starting_bid=starting_bid, image=image, category=category, created_by=created_by)
             listing.save()
-            return HttpResponseRedirect(reverse("auctions:index"))
+            return redirect("auctions:index")
         else:
             return render(request, "auctions/create.html", {
                 "form": form
@@ -101,7 +117,10 @@ def create(request):
 
 
 def watchlist(request):
-    return render(request, "auctions/watchlist.html")
+    watchlists = Watchlist.objects.filter(user=request.user)
+    return render(request, "auctions/watchlist.html", {
+        "watchlists": watchlists
+    })
 
 
 def categories(request):
@@ -116,12 +135,26 @@ def close(request):
     return render(request, "auctions/close.html")
 
 
-def comment(request):
-    return render(request, "auctions/comment.html")
+def comment(request, listing_id):
+    listing = Listing.objects.get(pk=listing_id)
+    if request.method == "POST":
+        form = NewCommentForm(request.POST)
+        if form.is_valid():
+            comment_text = form.cleaned_data["comment"]
+            created_by = User.objects.get(pk=request.user.id)
+            Comment.objects.create(comment=comment_text, created_by=created_by, listing=listing)
+    return redirect(reverse('auctions:listing', args=[listing_id]))
 
 
-def bid(request):
-    return render(request, "auctions/bid.html")
+def bid(request, listing_id):
+    listing = Listing.objects.get(pk=listing_id)
+    if request.method == "POST":
+        form = NewBidForm(request.POST)
+        if form.is_valid():
+            bid_amount = form.cleaned_data["bid"]
+            created_by = User.objects.get(pk=request.user.id)
+            Bid.objects.create(amount=bid_amount, user=created_by, listing=listing)
+    return redirect(reverse('auctions:listing', args=[listing_id]))
 
 
 def add_watchlist(request):

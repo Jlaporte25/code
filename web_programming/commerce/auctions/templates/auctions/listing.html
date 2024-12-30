@@ -1,13 +1,34 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>{{ listing.title }}</h2>
+<h2>{{ listing.title }}</h2>
+<p>{{ listing.description }}</p>
+<img src="{{ listing.image }}" alt="Image of {{ listing.title }}">
 
-    <img src="{{ listing.image_url }}" alt="Image of {{ listing.title }}">
-    <ul>
-        <li>{{ listing.description }}</li>
-        <li>{{ listing.price }}</li>
-        <li>{{ listing.category }}</li>
-        <li>{{ listing.seller }}</li>
-    </ul>
+<h3>Current Bid</h3>
+{% if highest_bid %}
+    <p>${{ highest_bid }}</p>
+{% else %}
+    <p>${{ listing.starting_bid }}</p>
+{% endif %}
+<p>{{ bid_count }} bids</p>
+<form action="{% url 'auctions:bid' listing.id %}" method="post">
+    {% csrf_token %}
+    {{ bid_form.as_p }}
+    <button type="submit">Add Bid</button>
+</form>
+
+<h3>Comments</h3>
+<ul>
+    {% for comment in listing_comments %}
+        <li>{{ comment.comment }} - {{ comment.created_by.username }}</li>
+    {% endfor %}
+</ul>
+
+<h3>Add a Comment</h3>
+<form action="{% url 'auctions:comment' listing.id %}" method="post">
+    {% csrf_token %}
+    {{ comment_form.as_p }}
+    <button type="submit">Add Comment</button>
+</form>
 {% endblock %}

@@ -3,7 +3,7 @@ from django.db import models
 
 
 class User(AbstractUser):
-    # username = models.CharField(max_length=64, unique=True)
+    username = models.CharField(max_length=64, unique=True)
     email = models.EmailField(max_length=254)
     password = models.CharField(max_length=64)
     
@@ -30,7 +30,7 @@ class Bid(models.Model):
 
 class Comment(models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='comments')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
     comment = models.TextField()
     def __str__(self):
         return f"{self.comment}"
