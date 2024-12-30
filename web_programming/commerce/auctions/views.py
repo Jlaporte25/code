@@ -131,7 +131,9 @@ def category(request):
     return render(request, "auctions/category.html")
 
 
-def close(request):
+def close(request, listing_id):
+    listing = Listing.objects.get(pk=listing_id)
+    
     return render(request, "auctions/close.html")
 
 
@@ -157,9 +159,17 @@ def bid(request, listing_id):
     return redirect(reverse('auctions:listing', args=[listing_id]))
 
 
-def add_watchlist(request):
-    return render(request, "auctions/add_watchlist.html")
+def add_watchlist(request, listing_id):
+    listing = Listing.objects.get(pk=listing_id)
+    if request.method == "POST":
+        created_by = User.objects.get(pk=request.user.id)
+        Watchlist.objects.create(user=created_by, listing=listing)
+    return redirect(reverse('auctions:watchlist'))
 
 
-def remove_watchlist(request):
-    return render(request, "auctions/remove_watchlist.html")
+def remove_watchlist(request, listing_id):
+    listing = Listing.objects.get(pk=listing_id)
+    if request.method == "POST":
+        created_by = User.objects.get(pk=request.user.id)
+        Watchlist.objects.filter(user=created_by, listing=listing).delete()
+    return redirect(reverse('auctions:watchlist'))

@@ -12,10 +12,21 @@
     <p>${{ listing.starting_bid }}</p>
 {% endif %}
 <p>{{ bid_count }} bids</p>
+
 <form action="{% url 'auctions:bid' listing.id %}" method="post">
     {% csrf_token %}
     {{ bid_form.as_p }}
     <button type="submit">Add Bid</button>
+</form>
+
+<form action="{% url 'auctions:add_watchlist' listing.id %}" method="post">
+    {% csrf_token %}
+    <button type="submit">Add To Watchlist</button>
+</form>
+
+<form action="{% url 'auctions:remove_watchlist' listing.id %}" method="post">
+    {% csrf_token %}
+    <button type="submit">Remove From Watchlist</button>
 </form>
 
 <h3>Comments</h3>
