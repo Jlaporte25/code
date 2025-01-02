@@ -18,6 +18,10 @@ class Listing(models.Model):
     category = models.CharField(max_length=64, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='listings')
     is_active = models.BooleanField(default=True)
+    
+    def get_winner(self):
+        return Winner.objects.filter(listing=self).first()
+    
     def __str__(self):
         return f"{self.title}"
 
@@ -43,6 +47,7 @@ class Watchlist(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=64)
+    listings = models.ManyToManyField(Listing, through='ListingCategory', related_name='categories')
     def __str__(self):
         return f"{self.name}"
 
@@ -55,23 +60,8 @@ class ListingCategory(models.Model):
 class Winner(models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='winner')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='winner')
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    
     def __str__(self):
-        return f"{self.listing} {self.user}"
+        return f"{self.listing} {self.user} {self.amount}"
 
-class ListingImage(models.Model):
-    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='images')
-    image = models.URLField()
-    def __str__(self):
-        return f"{self.image}"
-
-class ListingBid(models.Model):
-    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='listing_bids')
-    bid = models.ForeignKey(Bid, on_delete=models.CASCADE, related_name='listing_bids')
-    def __str__(self):
-        return f"{self.listing} {self.bid}"
-
-class ListingComment(models.Model):
-    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='listing_comments')
-    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='listing_comments')
-    def __str__(self):
-        return f"{self.listing} {self.comment}"

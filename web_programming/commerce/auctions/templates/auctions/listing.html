@@ -3,6 +3,7 @@
 {% block body %}
 <h2>{{ listing.title }}</h2>
 <p>{{ listing.description }}</p>
+<p>Created By: {{ listing.created_by }}</p>
 <img src="{{ listing.image }}" alt="Image of {{ listing.title }}">
 
 <h3>Current Bid</h3>
@@ -13,21 +14,39 @@
 {% endif %}
 <p>{{ bid_count }} bids</p>
 
-<form action="{% url 'auctions:bid' listing.id %}" method="post">
-    {% csrf_token %}
-    {{ bid_form.as_p }}
-    <button type="submit">Add Bid</button>
-</form>
-
-<form action="{% url 'auctions:add_watchlist' listing.id %}" method="post">
-    {% csrf_token %}
-    <button type="submit">Add To Watchlist</button>
-</form>
-
-<form action="{% url 'auctions:remove_watchlist' listing.id %}" method="post">
-    {% csrf_token %}
-    <button type="submit">Remove From Watchlist</button>
-</form>
+{% if is_active %}
+    <form action="{% url 'auctions:bid' listing.id %}" method="post">
+        {% csrf_token %}
+        {{ bid_form.as_p }}
+        <button type="submit">Add Bid</button>
+    </form>
+{% else %}
+    <p>Auction Closed</p>
+    {% if winner %}
+        <p>Winner: {{ winner.user.username }}</p>
+    {% else %}
+        <p>No Winner</p>
+    {% endif %}
+{% endif %}
+<br>
+{% if in_watchlist %}
+    <form action="{% url 'auctions:remove_watchlist' listing.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Remove From Watchlist</button>
+    </form>
+{% else %}
+    <form action="{% url 'auctions:add_watchlist' listing.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Add To Watchlist</button>
+    </form>
+{% endif %}
+<br>
+{% if is_owner %}
+    <form action="{% url 'auctions:close' listing.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Close Auction</button>
+    </form>
+{% endif %}
 
 <h3>Comments</h3>
 <ul>
@@ -35,8 +54,6 @@
         <li>{{ comment.comment }} - {{ comment.created_by.username }}</li>
     {% endfor %}
 </ul>
-
-<h3>Add a Comment</h3>
 <form action="{% url 'auctions:comment' listing.id %}" method="post">
     {% csrf_token %}
     {{ comment_form.as_p }}

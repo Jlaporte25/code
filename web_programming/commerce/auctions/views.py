@@ -21,12 +21,16 @@ class NewBidForm(forms.Form):
     bid = forms.DecimalField(label="New Bid", max_digits=10, decimal_places=2)
 
 def index(request):
-    if not request.user.is_authenticated:
-        return HttpResponseRedirect(reverse("auctions:login"))
+    listings = Listing.objects.all()
+    for listing in listings:
+        winner = listing.get_winner()
+        if winner:
+            listing.winner_user = winner.user.username
+        else:
+            listing.winner_user = None
     return render(request, "auctions/index.html", {
-        "listings": Listing.objects.all()
+        "listings": listings,
     })
-
 
 def login_view(request):
     if request.method == "POST":
@@ -83,6 +87,9 @@ def listing(request, listing_id):
     listing_bids = Bid.objects.filter(listing=listing)
     highest_bid = listing_bids.aggregate(Max('amount'))['amount__max']
     bid_count = listing_bids.aggregate(Count('id'))['id__count']
+    in_watchlist = Watchlist.objects.filter(user=request.user, listing=listing).exists()
+    is_owner = request.user == listing.created_by
+    winner = listing.get_winner()
     return render(request, "auctions/listing.html", {
         "listing": listing,
         "listing_comments": listing_comments,
@@ -90,6 +97,10 @@ def listing(request, listing_id):
         "bid_count": bid_count,
         "comment_form": NewCommentForm(),
         "bid_form": NewBidForm(),
+        "in_watchlist": in_watchlist,
+        "is_owner": is_owner,
+        "is_active": listing.is_active,
+        "winner": winner,
     })
 
 
@@ -101,10 +112,13 @@ def create(request):
             description = form.cleaned_data["description"]
             starting_bid = form.cleaned_data["starting_bid"]
             image = form.cleaned_data["image"]
-            category = form.cleaned_data["category"]
+            category_name = form.cleaned_data["category"]
             created_by = User.objects.get(pk=request.user.id)
-            listing = Listing.objects.create(title=title, description=description, starting_bid=starting_bid, image=image, category=category, created_by=created_by)
+            listing = Listing.objects.create(title=title, description=description, starting_bid=starting_bid, image=image, category=category_name, created_by=created_by, is_active=True)
             listing.save()
+            
+            category, created = Category.objects.get_or_create(name=category_name)
+            category.listings.add(listing)
             return redirect("auctions:index")
         else:
             return render(request, "auctions/create.html", {
@@ -124,17 +138,32 @@ def watchlist(request):
 
 
 def categories(request):
-    return render(request, "auctions/categories.html")
+    categories = Category.objects.all()
+    return render(request, "auctions/categories.html", {
+        "categories": categories,
+    })
 
 
-def category(request):
-    return render(request, "auctions/category.html")
+def category(request, category_id):
+    category = Category.objects.get(pk=category_id)
+    listings = category.listings.all()
+    return render(request, "auctions/category.html", {
+        "listings": listings,
+        "category": category,
+    })
 
 
 def close(request, listing_id):
     listing = Listing.objects.get(pk=listing_id)
-    
-    return render(request, "auctions/close.html")
+    if request.user == listing.created_by:
+        listing.is_active = False
+        listing.save()
+        winner_bid = Bid.objects.filter(listing=listing).order_by('-amount').first()
+        if winner_bid:
+            listing.winner_set.create(user=winner_bid.user, amount=winner_bid.amount)
+        return redirect(reverse('auctions:listing', args=[listing_id]))
+    else:
+        return redirect(reverse('auctions:index', args=[listing_id]))
 
 
 def comment(request, listing_id):
@@ -150,6 +179,9 @@ def comment(request, listing_id):
 
 def bid(request, listing_id):
     listing = Listing.objects.get(pk=listing_id)
+    if not listing.is_active:
+        return redirect(reverse('auctions:listing', args=[listing_id]))
+    
     if request.method == "POST":
         form = NewBidForm(request.POST)
         if form.is_valid():
@@ -164,7 +196,7 @@ def add_watchlist(request, listing_id):
     if request.method == "POST":
         created_by = User.objects.get(pk=request.user.id)
         Watchlist.objects.create(user=created_by, listing=listing)
-    return redirect(reverse('auctions:watchlist'))
+    return redirect(reverse('auctions:listing', args=[listing_id]))
 
 
 def remove_watchlist(request, listing_id):
@@ -172,4 +204,4 @@ def remove_watchlist(request, listing_id):
     if request.method == "POST":
         created_by = User.objects.get(pk=request.user.id)
         Watchlist.objects.filter(user=created_by, listing=listing).delete()
-    return redirect(reverse('auctions:watchlist'))
+    return redirect(reverse('auctions:listing', args=[listing_id]))

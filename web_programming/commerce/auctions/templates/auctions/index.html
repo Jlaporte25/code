@@ -4,14 +4,21 @@
     <h2>Active Listings</h2>
     <ul>
         {% for listing in listings %}
-            <li>
-                <img src="{{ listing.image }}" alt="Image of {{ listing.title }}">
-                <a href="{% url 'auctions:listing' listing.id %}">{{ listing.title }}</a>
-                {% if listing.winner %}
-                    Winner: {{ listing.winner.username }}
-                {% else %}
-                    No Winner
-                {% endif %}
-            </li>
+            {% if listing.is_active %}
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ listing.title }}</h5>
+                        <img src="{{ listing.image }}" alt="Image of {{ listing.title }}" style="max-width: 100px;" />
+                        <a href="{% url 'auctions:listing' listing.id %}" class="btn btn-primary">{{ listing.title }}</a>
+                        {% if listing.winner_user %}
+                            Winner: {{ listing.winner_user }}
+                        {% else %}
+                            No Winner
+                        {% endif %}
+                    </div>
+                </div>
+                <br>
+            {% endif %}
         {% endfor %}
+    </ul>
 {% endblock %}
