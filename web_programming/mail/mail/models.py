@@ -3,13 +3,11 @@ from django.db import models
 
 
 class User(AbstractUser):
-    id = models.BigAutoField(primary_key=True)
     email = models.EmailField(unique=True)
-    password = models.CharField(max_length=255)
+    password = models.CharField(max_length=128, blank=True)
 
 
 class Email(models.Model):
-    id = models.AutoField(primary_key=True)
     user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="emails")
     sender = models.ForeignKey("User", on_delete=models.PROTECT, related_name="emails_sent")
     recipients = models.ManyToManyField("User", related_name="emails_received")
