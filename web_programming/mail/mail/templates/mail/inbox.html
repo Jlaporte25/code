@@ -11,10 +11,7 @@
     <a class="btn btn-sm btn-outline-primary" href="{% url 'logout' %}">Log Out</a>
     <hr>
 
-    <div id="emails-view">
-    </div>
-
-    <div id="compose-view">
+    <div id="compose-view" style="display: none;">
         <h3>New Email</h3>
         <form id="compose-form">
             <div class="form-group">
@@ -30,6 +27,61 @@
             <input type="submit" class="btn btn-primary"/>
         </form>
     </div>
+
+    <div id="emails-view" style="display: block;">
+        <h3>Emails</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>From</th>
+                    <th>Subject</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody id="emails">
+            </tbody>
+        </table>
+    </div>
+
+    <div id="sent-view" style="display: none;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>To</th>
+                    <th>Subject</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody id="sent-emails">
+            </tbody>
+        </table>
+    </div>
+
+    <div id="archive-view" style="display: none;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>From</th>
+                    <th>Subject</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody id="archived-emails">
+            </tbody>
+        </table>
+    </div>
+
+    <div id="email-view" style="display: none;">
+        <h3>Email</h3>
+        <div id="email-content">
+            <strong>From:</strong> <span id="email-sender"></span><br>
+            <strong>To:</strong> <span id="email-recipients"></span><br>
+            <strong>Subject:</strong> <span id="email-subject"></span><br>
+            <strong>Timestamp:</strong> <span id="email-timestamp"></span><br>
+            <hr>
+            <span id="email-body"></span>
+        </div>
+
 {% endblock %}
 
 {% block script %}
