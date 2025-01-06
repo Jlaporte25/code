@@ -3,9 +3,7 @@ from django.db import models
 
 
 class User(AbstractUser):
-    id = models.AutoField(primary_key=True)
-    email = models.EmailField(unique=True)
-    password = models.CharField(max_length=128, blank=True)
+    pass
 
 
 class Email(models.Model):
