@@ -94,6 +94,8 @@ function view_email(email_id) {
   document.querySelector('#compose-view').style.display = 'none';
   document.querySelector('#emails-view').style.display = 'none';
 
+  // Clear out email view
+  document.querySelector('#email-view').innerHTML = '';
 
   // Fetch email
   fetch(`/emails/${email_id}`)
@@ -154,3 +156,15 @@ function toggle_archive(email_id, archived) {
   })
   .then(() => load_mailbox('archive'));
 }
+
+function reply_email(email) {
+  console.log(`Replying to email: ${email.id}`);
+
+  compose_email();
+
+  // Pre-fill composition fields
+  document.querySelector('#compose-recipients').value = email.sender;
+  document.querySelector('#compose-subject').value = email.subject.startsWith('Re:') ? email.subject : `Re: ${email.subject}`;
+  document.querySelector('#compose-body').value = `On ${email.timestamp} ${email.sender} wrote: ${email.body}`;
+}
+
