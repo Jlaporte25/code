@@ -55,10 +55,17 @@ function load_mailbox(mailbox) {
       const newEmail = document.createElement('div');
       newEmail.className = 'list-group-item list-group-item-action email border border-dark';
       newEmail.innerHTML = `<strong>${email.recipients}</strong> ${email.subject} ${email.timestamp}`;
+      if (email.read) {
+        newEmail.style.backgroundColor = 'lightgray';
+      }
       newEmail.addEventListener('click', function() {
         view_email(email.id);
       });
       document.querySelector('#emails-view').append(newEmail);})
+
+      if (emails.length === 0) {
+        document.querySelector('#emails-view').innerHTML = '<p>No emails to display</p>';
+      }
   })
 };
 
@@ -165,6 +172,6 @@ function reply_email(email) {
   // Pre-fill composition fields
   document.querySelector('#compose-recipients').value = email.sender;
   document.querySelector('#compose-subject').value = email.subject.startsWith('Re:') ? email.subject : `Re: ${email.subject}`;
-  document.querySelector('#compose-body').value = `On ${email.timestamp} ${email.sender} wrote: ${email.body}`;
+  document.querySelector('#compose-body').value = '';
 }
 
