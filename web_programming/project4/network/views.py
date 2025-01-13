@@ -3,6 +3,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 
 from .models import User, Post
 
@@ -62,20 +63,29 @@ def register(request):
     else:
         return render(request, "network/register.html")
 
-def create_post(request):
-    if request.method == "POST":
-        content = request.POST["content"]
-        post = Post(user=request.user, content=content)
-        post.save()
-        return HttpResponseRedirect(reverse("index"))
-    else:
-        return render(request, "network/index.html")
-
-def profile(request, username):
-    user = User.objects.get(username=username)
-    return render(request, "network/profile.html", {
-        "user": user,
-        "posts": user.posts.all()
+def all_posts(request):
+    posts = Post.objects.all().order_by("-timestamp")
+    return render(request, "network/all_posts.html", {
+        "posts": posts
     })
 
+@login_required
+def profile(request, username=None):
+    if username is None:
+        username = request.user.username
 
+    try:
+        # Get the user
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return render(request, "network/profile.html", {
+            "message": "User not found."
+        })
+    
+    # Get the user's posts
+    posts = Post.objects.filter(user=user).order_by("-timestamp")
+    
+    return render(request, "network/profile.html", {
+        "user": user,
+        "posts": posts
+    })

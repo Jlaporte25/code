@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelector('#all_posts').addEventListener(onclick, () => load_posts());
     document.querySelector('post-form').onsubmit = () => create_post();
+    document.querySelector('#profile').addEventListener(onclick, () => load_posts())
 })
 
 function load_posts(post) {
@@ -46,3 +47,4 @@ function create_post() {
     return false;
 
 }
+
