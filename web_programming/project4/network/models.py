@@ -15,8 +15,6 @@ class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="posts")
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
-    likes = models.ManyToManyField(User, related_name="liked_posts")
-
     def serialize(self):
         return {
             "id": self.id,
@@ -28,3 +26,18 @@ class Post(models.Model):
         
     def __str__(self):
         return f"{self.user}: {self.content}"
+
+class Follow(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="followers")
+    following = models.ManyToManyField(User, related_name="following")
+
+    def __str__(self):
+        return f"{self.user} follows {self.following}"
+
+class Like(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="likes")
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="likes")
+
+    def __str__(self):
+        return f"{self.user} likes {self.post}"
+
