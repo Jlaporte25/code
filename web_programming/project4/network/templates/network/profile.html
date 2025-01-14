@@ -2,5 +2,12 @@
 
 {% block body %}
     <h1>My Posts</h1>
-    <div class="profile-view"></div>
+    <div class="profile-view">
+        {% for post in posts %}
+            <div class="list-group-item">
+                {{ post.content }}
+                by: {{ post.user.username }}
+            </div>
+        {% endfor %}
+    </div>
 {% endblock %}

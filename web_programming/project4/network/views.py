@@ -9,7 +9,11 @@ from .models import User, Post
 
 
 def index(request):
-    return render(request, "network/index.html")
+    if request.user.is_authenticated:
+        return HttpResponseRedirect(reverse("all_posts"))
+    else:
+        return render(request, "network/login.html")
+
 
 
 def login_view(request):

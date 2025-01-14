@@ -1,0 +1,12 @@
+{% extends 'network/layout.html' %}
+
+{% block body %}
+    <form id="post-form" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="content">New Tweet: </label>
+            <input class="content" type="textarea" id="content">
+            <button type="submit" class="btn btn-primary">Post</button>
+        </div>
+    </form>
+{% endblock %}
