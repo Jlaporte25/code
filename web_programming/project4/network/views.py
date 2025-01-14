@@ -1,9 +1,11 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 from .models import User, Post
 
@@ -63,11 +65,23 @@ def register(request):
     else:
         return render(request, "network/register.html")
 
+
+def posts(request, page):
+    if page == "all":
+        posts = Post.objects.all()
+    elif page == request.user.username:
+        posts = Post.objects.filter(user=request.user)
+    
+    posts = posts.order_by("-timestamp").all()
+    return JsonResponse([post.serialize() for post in posts], safe=False)
+
+
 def all_posts(request):
     posts = Post.objects.all().order_by("-timestamp")
     return render(request, "network/all_posts.html", {
         "posts": posts
     })
+
 
 @login_required
 def profile(request, username=None):
@@ -89,3 +103,20 @@ def profile(request, username=None):
         "user": user,
         "posts": posts
     })
+
+
+@csrf_exempt
+@login_required
+def create_post(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        content = data.get("content", "")
+
+        if content == "":
+            return JsonResponse({"error": "Content cannot be empty."}, status=400)
+
+        post = Post(user=request.user, content=content)
+        post.save()
+        return JsonResponse({"success": "Post created successfully."}, status=201)
+
+    return JsonResponse({"error": "POST request required."}, status=400)

@@ -1,4 +1,3 @@
-
 from django.urls import path
 
 from . import views
@@ -10,6 +9,7 @@ urlpatterns = [
     path("register", views.register, name="register"),
     
     #API Routes
-    path("all_posts", views.all_posts, name="all_posts"),
-    path("profile/<str:username>", views.profile, name="profile"),
+    path("posts/all", views.all_posts, name="all_posts"),
+    path("posts/<str:username>", views.profile, name="profile"),
+    path("create_post", views.create_post, name="create_post"),
 ]
