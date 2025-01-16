@@ -69,29 +69,22 @@ def register(request):
     else:
         return render(request, "network/register.html")
 
-
-def posts(request, page):
-    if page == "all":
-        posts = Post.objects.all()
-    elif page == request.user.username:
-        posts = Post.objects.filter(user=request.user)
-    
-    posts = posts.order_by("-timestamp").all()
-    return JsonResponse([post.serialize() for post in posts], safe=False)
-
-
 def all_posts(request):
     posts = Post.objects.all().order_by("-timestamp")
+    posts_data = []
+    for post in posts:
+        posts_data.append({
+            "content": post.content,
+            "user": post.user.username,
+            "timestamp": post.timestamp.strftime("%b %d %Y, %I:%M %p"),
+            "likes": post.likes.count()
+        })
     return render(request, "network/all_posts.html", {
-        "posts": posts
+        "posts": posts_data
     })
 
-
 @login_required
-def profile(request, username=None):
-    if username is None:
-        username = request.user.username
-
+def profile(request, username):
     try:
         # Get the user
         user = User.objects.get(username=username)
@@ -103,10 +96,16 @@ def profile(request, username=None):
     # Get the user's posts
     posts = Post.objects.filter(user=user).order_by("-timestamp")
     
-    return render(request, "network/profile.html", {
-        "user": user,
-        "posts": posts
-    })
+    if username == request.user.username:
+        return render(request, "network/my_profile.html",{
+            "user": user,
+            "posts": posts,
+        })
+    else:
+        return render(request, "network/profile.html", {
+            "user": user,
+            "posts": posts
+        })
 
 @login_required
 def following(request):
@@ -114,8 +113,18 @@ def following(request):
     follows = Follow.objects.filter(user=user)
     following_users = User.objects.filter(following__in=follows).distinct()
     posts = Post.objects.filter(user__in=following_users).select_related('user').order_by("-timestamp")
+    
+    posts_data = []
+    for post in posts:
+        posts_data.append({
+            "content": post.content,
+            "user": post.user.username,
+            "timestamp": post.timestamp.strftime("%b %d %Y, %I:%M %p"),
+            "likes": post.likes.count()
+        })
+    
     return render(request, "network/following.html", {
-        "posts": posts,
+        "posts": posts_data,
     })
 
 @login_required
@@ -145,8 +154,8 @@ def unfollow(request, username):
 @login_required
 def create_post(request):
     if request.method == "POST":
-        content = request.POST["content"]
-        post = Post(user=request.user, content=content)
+        content = request.POST.get("content")
+        post = Post.objects.create(user=request.user, content=content)
         post.save()
         return HttpResponseRedirect(reverse("all_posts"))
     else:

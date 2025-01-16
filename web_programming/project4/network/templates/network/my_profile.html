@@ -1,14 +1,12 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
-<h1>Following</h1>
-    <div class="following-posts">
+    <h1>My Posts</h1>
+    <div class="profile-view">
         {% for post in posts %}
             <div class="list-group-item">
                 {{ post.content }}
-                By: {{ post.user }},
-                {{ post.timestamp }}
-                Likes: {{ post.likes }}
+                by: {{ post.user.username }}
             </div>
         {% endfor %}
     </div>
