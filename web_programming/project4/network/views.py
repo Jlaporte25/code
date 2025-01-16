@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 import json
 
-from .models import User, Post
+from .models import Follow, User, Post
 
 
 def index(request):
@@ -111,10 +111,11 @@ def profile(request, username=None):
 @login_required
 def following(request):
     user = request.user
-    following = user.following.all()
-    posts = Post.objects.filter(user__in=following).order_by("-timestamp")
+    follows = Follow.objects.filter(user=user)
+    following_users = User.objects.filter(following__in=follows).distinct()
+    posts = Post.objects.filter(user__in=following_users).select_related('user').order_by("-timestamp")
     return render(request, "network/following.html", {
-        "posts": posts
+        "posts": posts,
     })
 
 @login_required
