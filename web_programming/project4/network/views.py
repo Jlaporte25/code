@@ -84,10 +84,10 @@ def all_posts(request):
     })
 
 @login_required
-def profile(request, username):
+def profile(request, user_id):
     try:
         # Get the user
-        user = User.objects.get(username=username)
+        user = User.objects.get(id=user_id)
     except User.DoesNotExist:
         return render(request, "network/profile.html", {
             "message": "User not found."
@@ -96,8 +96,8 @@ def profile(request, username):
     # Get the user's posts
     posts = Post.objects.filter(user=user).order_by("-timestamp")
     
-    if username == request.user.username:
-        return render(request, "network/my_profile.html",{
+    if user == request.user.id:
+        return render(request, "network/profile.html",{
             "user": user,
             "posts": posts,
         })
@@ -128,28 +128,28 @@ def following(request):
     })
 
 @login_required
-def follow(request, username):
+def follow(request, user_id):
     try:
-        user = User.objects.get(username=username)
+        user = User.objects.get(user=user_id)
     except User.DoesNotExist:
         return render(request, "network/profile.html", {
             "message": "User not found."
         })
     
     request.user.following.add(user)
-    return HttpResponseRedirect(reverse("profile", args=[username]))
+    return HttpResponseRedirect(reverse("profile", args=[user_id]))
 
 @login_required
-def unfollow(request, username):
+def unfollow(request, user_id):
     try:
-        user = User.objects.get(username=username)
+        user = User.objects.get(username=user_id)
     except User.DoesNotExist:
         return render(request, "network/profile.html", {
             "message": "User not found."
         })
     
     request.user.following.remove(user)
-    return HttpResponseRedirect(reverse("profile", args=[username]))
+    return HttpResponseRedirect(reverse("profile", args=[user_id]))
 
 @login_required
 def create_post(request):
