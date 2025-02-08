@@ -6,6 +6,7 @@ def merge_sort(linked_list):
     - Recursively divide the linked list into sublists containing a single node
     - Repeatedly sort the sublists to produce sorted sublists until one remains
     - Returns a sorted linked list
+    Runs in O(kn log n)
     """
     
     if linked_list.size() == 1:
@@ -22,6 +23,7 @@ def merge_sort(linked_list):
 def split(linked_list):
     """
     Divide the unsorted list at midpoint into sublists
+    Takes O(k log n) time
     """
     
     if linked_list == None or linked_list.head == None:
@@ -42,4 +44,71 @@ def split(linked_list):
         return left_half, right_half
 
 def merge(left, right):
-    pass
+    """
+    Merges two linked list, by sorting data in nodes
+    Returns a new, merged linked list
+    Runs in O(n) or linear time
+    """
+    
+    # create a new linked list that contains nodes from
+    # merging left and right
+    merged = LinkedList()
+    
+    # add a fake head that is discarded later
+    merged.add(0)
+    
+    #set current to the head of the linked list
+    current = merged.head
+    
+    # Obtain head nodes for left and right linked lists
+    left_head = left.head
+    right_head = right.head
+    
+    # iterate over left and right until we reach tail of either
+    while left_head or right_head:
+        # if head node of left is None, we're past the tail.
+        # add the node from right to merge linked list
+        if left_head is None:
+            current.next_node = right_head
+            # call next on right to set loop condition to False
+            right_head = right_head.next_node
+        # if head node of right is None, we're past the tail.
+        # add the node from left to merge linked list
+        elif right_head is None:
+            current.next_node = left_head
+            # call next on left to set loop condition to False
+            left_head = left_head.next_node
+        else:
+            # not at either tail node
+            # obtain node data to perform comparison operations
+            left_data = left_head.data
+            right_data = right_head.data
+            # if data on left is less than right, set current to left node
+            if left_data < right_data:
+                current.next_node = left_head
+                # move left head to next node
+                left_head = left_head.next_node
+            # if data on left is greater than right, set current to right node
+            else:
+                current.next_node = right_head
+                # move right head to next node
+                right_head = right_head.next_node
+        # move current to next node
+        current = current.next_node
+    # discard fake head and set first merged node as head
+    head = merged.head.next_node
+    merged.head = head
+    
+    return merged
+
+l = LinkedList()
+l.add(10)
+l.add(15)
+l.add(145)
+l.add(2)
+l.add(49)
+l.add(28)
+
+print(l)
+sorted_linked_list = merge_sort(l)
+print(sorted_linked_list)
